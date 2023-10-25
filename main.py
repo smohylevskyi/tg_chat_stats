@@ -1,8 +1,9 @@
 from stats import *
+import sys
 
 if __name__ == '__main__':
-    dir_path = 'C:\\Users\\Worker\\Desktop\\ChatExport_2023-10-24 - Copy'
-    parsed_data = parse_data(dir_path)
+    parsed_data = parse_data(sys.argv[1])
+
     print_dict('= TOP MESSAGE COUNT BY AUTHOR =', get_message_count_top(parsed_data, conf.TOP_MESSAGE_COUNT))
     print_dict('= TOP SYMBOLS BY AUTHOR =', get_character_count_top(parsed_data, conf.TOP_CHARACTER_COUNT))
     print_dict('= TOP SYMBOLS PER MESSAGE =', get_average_characters_per_message(parsed_data, lowest=False))

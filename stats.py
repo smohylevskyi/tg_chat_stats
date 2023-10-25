@@ -3,8 +3,8 @@ from utils import *
 from datetime import datetime
 
 
-def parse_data(history_dir_path):
-    with open(history_dir_path + '\\result.json', encoding="utf8") as f:
+def parse_data(history_file_path):
+    with open(history_file_path, encoding="utf8") as f:
         history = f.read()
     json_history = json.loads(history)
     return json_history['messages']
