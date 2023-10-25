@@ -30,6 +30,45 @@ def generate_date_range(start_date, end_date):
     return date_range
 
 
+def get_messages_by_person(data):
+    messages = {}
+
+    for message in data:
+        if message['type'] != 'service':
+            author = message['from']
+            if author in messages:
+                messages[author].append(message)
+            else:
+                messages[author] = [message]
+
+    return messages
+
+
+def calculate_activity_date_ranges(data, person):
+    person_dates_of_messages = get_message_dates_for_person(data, person)
+    full_date_range = generate_date_range(data[person][0]['date'], data[person][-1]['date'])
+
+    result = {}
+    current_range_counter = 0
+    range_start_date = None
+    old_date = None
+
+    for date in full_date_range:
+        date_as_string = date.strftime(conf.DATE_SHORT_FORMAT)
+        if date_as_string in person_dates_of_messages:
+            if range_start_date is None:
+                range_start_date = date_as_string
+            current_range_counter += 1
+            old_date = date_as_string
+        else:
+            if range_start_date:
+                result[f'{range_start_date} - {old_date}'] = current_range_counter
+                range_start_date = None
+                current_range_counter = 0
+
+    return result
+
+
 def take_from_dict(d, entry_count):
     return dict(islice(d.items(), entry_count))
 

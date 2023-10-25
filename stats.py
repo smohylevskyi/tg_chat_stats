@@ -82,37 +82,9 @@ def get_message_count_per_hour(parsed_data):
 
 
 def get_top_day_streak(parsed_data, top_people=conf.TOP_STREAK_PEOPLE_COUNT, top_streaks=conf.TOP_STREAK_STREAKS_COUNT):
-    messages = {}
+    messages = get_messages_by_person(parsed_data)
     active_ranges = {}
 
-    for message in parsed_data:
-        if message['type'] != 'service':
-            author = message['from']
-            if author in messages:
-                messages[author].append(message)
-            else:
-                messages[author] = [message]
-                active_ranges[author] = {}
-
     for person in messages:
-
-        person_dates_of_messages = get_message_dates_for_person(messages, person)
-        full_date_range = generate_date_range(messages[person][0]['date'], messages[person][-1]['date'])
-
-        current_range_counter = 0
-        range_start_date = None
-        old_date = None
-
-        for date in full_date_range:
-            date_as_string = date.strftime(conf.DATE_SHORT_FORMAT)
-            if date_as_string in person_dates_of_messages:
-                if range_start_date is None:
-                    range_start_date = date_as_string
-                current_range_counter += 1
-                old_date = date_as_string
-            else:
-                if range_start_date:
-                    active_ranges[person][f'{range_start_date} - {old_date}'] = current_range_counter
-                    range_start_date = None
-                    current_range_counter = 0
+        active_ranges[person] = calculate_activity_date_ranges(messages, person)
     return find_top_ranges(active_ranges, top_people, top_streaks)
